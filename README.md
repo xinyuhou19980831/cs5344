@@ -25,7 +25,17 @@ def preprocess_text(df: DataFrame, input_column: str, output_column: str) -> Dat
 ```
 
 ## Step 5: Plot silhouette score and cluster data using Word2Vec and TFIDF separately
-
+```
+fig, ax = plt.subplots(1,2, figsize =(16, 6))
+ax[0].plot(range(2,11), silhouette_scores)
+ax[0].set_xlabel('Number of Clusters')
+ax[0].set_ylabel('Silhouette Score')
+ax[1].plot(range(2,11), silhouette_scores2)
+ax[1].set_xlabel('Number of Clusters')
+ax[1].set_ylabel('Silhouette Score')
+plt.tick_params(axis='both', which='minor', labelsize=14)
+plt.savefig('silhouette_score.pdf')
+```
 ## Step 6: Plot clusters in 2-dimensional space
 Using plotly.express to plot the data and save them to pdf
 ```

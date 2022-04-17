@@ -16,9 +16,12 @@ combined_df = combined_df.withColumn("combined_text", concat(combined_df.title, 
 ## Step 4: Define embedding function and preprocessing function
 ```
 def compute_embeddings(df: DataFrame, input_column: str, document_column: str) -> DataFrame:
-...
+    ...
+    return transformed_df.withColumn("exploded_embeddings", explode(col("bert_embeddings.embeddings")))\
+        .withColumn("bert", dense_vector_udf("exploded_embeddings"))
 def preprocess_text(df: DataFrame, input_column: str, output_column: str) -> DataFrame:
-...
+    ...
+    return pipeline.fit(df).transform(df)
 ```
 
 ## Step 5: Plot silhouette score and cluster data using Word2Vec and TFIDF separately

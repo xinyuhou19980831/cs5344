@@ -25,6 +25,7 @@ def preprocess_text(df: DataFrame, input_column: str, output_column: str) -> Dat
 ```
 
 ## Step 5: Plot silhouette score and cluster data using Word2Vec and TFIDF separately
+Put the two plots together.
 ```
 fig, ax = plt.subplots(1,2, figsize =(16, 6))
 ax[0].plot(range(2,11), silhouette_scores)
@@ -35,6 +36,16 @@ ax[1].set_xlabel('Number of Clusters')
 ax[1].set_ylabel('Silhouette Score')
 plt.tick_params(axis='both', which='minor', labelsize=14)
 plt.savefig('silhouette_score.pdf')
+```
+K-means clustering
+```
+KMeans_1 = KMeans(featuresCol='word2vec', k=2)
+KMeans_fit1 = KMeans_1.fit(input_data)
+KMeans_transform1 = KMeans_fit1.transform(input_data)
+
+KMeans_2 = KMeans(featuresCol='tfidf', k=2)
+KMeans_fit2 = KMeans_2.fit(input_data)
+KMeans_transform2 = KMeans_fit2.transform(input_data)
 ```
 ## Step 6: Plot clusters in 2-dimensional space
 Using plotly.express to plot the data and save them to pdf

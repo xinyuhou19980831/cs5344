@@ -13,7 +13,8 @@ true_df = spark.read.option("header", "true").csv(path_true).withColumn("type", 
 combined_df = true_df.withColumn('fake', lit(0)).union(fake_df.withColumn('fake', lit(1))).orderBy(rand())
 combined_df = combined_df.withColumn("combined_text", concat(combined_df.title, combined_df.text))
 ```
-## Step 4: Define embedding function and preprocessing function
+## Step 4: Define embedding function and preprocessing function and transform input data
+Define the functions
 ```
 def compute_embeddings(df: DataFrame, input_column: str, document_column: str) -> DataFrame:
     ...
@@ -23,7 +24,11 @@ def preprocess_text(df: DataFrame, input_column: str, output_column: str) -> Dat
     ...
     return pipeline.fit(df).transform(df)
 ```
-
+Transform the input data
+```
+input_data = preprocess_text(trainingData, "combined_text", "preprocessed")
+input_data = compute_embeddings(input_data, input_column = "preprocessed", document_column = "document")
+```
 ## Step 5: Plot silhouette score and cluster data using Word2Vec and TFIDF separately
 Put the two plots together.
 ```

@@ -1,37 +1,39 @@
 # CS5344 Group Project EDA-Clustering
-## Step 1: Load the necessary packages
-```
-from pyspark.sql import SparkSession, SQLContext
-from pyspark.ml.feature import StringIndexer, HashingTF, IDF, Word2Vec
-from pyspark.ml.classification import LogisticRegression, RandomForestClassifier, DecisionTreeClassifier, GBTClassifier
-# from util import *
-from pyspark.sql.functions import lit, concat, col, rand, when
-from pyspark.ml.clustering import KMeans, LDA
-from pyspark.ml.evaluation import ClusteringEvaluator, MulticlassClassificationEvaluator
-from pyspark.sql import DataFrame
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-from sparknlp.base import Finisher, DocumentAssembler
-from sparknlp.annotator import (BertSentenceEmbeddings, ClassifierDLApproach, UniversalSentenceEncoder,
-                                SentimentDLApproach, SentimentDLModel)
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-import matplotlib.pyplot as plt
-from pyspark.ml import Pipeline
-from pyspark.sql.types import StringType, StructField, StructType
-import pandas as pd
-import numpy as np
-import nltk
-from nltk.corpus import stopwords
-from sparknlp.annotator import (Tokenizer, Normalizer,
-                                LemmatizerModel, StopWordsCleaner)
-from pyspark.sql.functions import explode, col, udf
-from pyspark.ml.linalg import Vectors, VectorUDT
 
-```
+## Step 1: Load the necessary packages
+
 ## Step 2: Build the PySpark environment
+
+## Step 3: Load data, combine fake and true together, and shuffle
 ```
-spark = SparkSession.builder \
-    .config("spark.jars.packages", "com.johnsnowlabs.nlp:spark-nlp_2.12:3.4.2") \
-    .config("spark.executor.memory", "8g") \
-    .config("spark.driver.memory", "16g") \
-    .getOrCreate()
+path_fake = 'Fake.csv'
+path_true = 'True.csv'
+fake_df = spark.read.option("header", "true").csv(path_fake).withColumn("type", lit("F"))
+true_df = spark.read.option("header", "true").csv(path_true).withColumn("type", lit("T"))
+combined_df = true_df.withColumn('fake', lit(0)).union(fake_df.withColumn('fake', lit(1))).orderBy(rand())
+combined_df = combined_df.withColumn("combined_text", concat(combined_df.title, combined_df.text))
+```
+## Step 4: Define embedding function and preprocessing function
+```
+def compute_embeddings(df: DataFrame, input_column: str, document_column: str) -> DataFrame:
+...
+def preprocess_text(df: DataFrame, input_column: str, output_column: str) -> DataFrame:
+...
+```
+
+## Step 5: Plot silhouette score and cluster data using Word2Vec and TFIDF separately
+
+## Step 6: Plot clusters in 2-dimensional space
+Using plotly.express to plot the data and save them to pdf
+```
+fig = px.scatter(
+    df_embeddings, x='x', y='y',
+    size_max = 100, template = 'simple_white',
+    color='label', 
+    labels={'color': 'label'},
+    opacity=0.5,
+    color_discrete_map={1: 'red', 0: 'blue'},
+    title = 'Word2Vec visualization')
+plt.rcParams.update({'font.size': 12})
+fig.write_image("word2vec.pdf")
 ```
